@@ -6,7 +6,9 @@
     // 以正则方式自定义组件匹配规则
     "custom": {
       // uni-ui 规则如下配置 能自动识别我们用的组件并导入
-      "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+      "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue",
+      // 以Xtx开头的组件 在components 文件夹中查找引入 (需要重启服务)
+      "^Xtx(.*)": "@/components/Xtx$1.vue"
     }
   },
   "pages": [
@@ -14,6 +16,8 @@
     {
       "path": "pages/index/index",
       "style": {
+        "navigationStyle": "custom",
+        "navigationBarTextStyle": "white",
         "navigationBarTitleText": "首页"
       }
     },

@@ -2,7 +2,7 @@ import { useMemberStore } from '@/stores'
 
 const baseURL = 'https://pcapi-xiaotuxian-front-devtest.itheima.net'
 
-// 添加拦截器
+// 添加请求拦截器
 const httpInterceptor = {
   // 拦截前触发
   invoke(options: UniApp.RequestOptions) {
@@ -23,8 +23,42 @@ const httpInterceptor = {
     if (token) {
       options.header.Authorization = token
     }
-    console.log(options)
+    // console.log(options)
   },
 }
 uni.addInterceptor('request', httpInterceptor)
 uni.addInterceptor('uploadFile', httpInterceptor)
+interface Data<T> {
+  code: string
+  msg: string
+  result: T
+}
+// 添加类型 支持泛型
+export const http = <T>(options: UniApp.RequestOptions) => {
+  return new Promise<Data<T>>((resolve, reject) => {
+    uni.request({
+      ...options,
+      // 请求成功
+      success(res) {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          // 提取核心数据
+          resolve(res.data as Data<T>) // 断言
+        } else if (res.statusCode === 401) {
+          // TODO: 处理401错误 清理用户信息
+          const memberStore = useMemberStore()
+          memberStore.clearProfile()
+          uni.navigateTo({ url: '/pages/login/login' })
+          reject(res)
+        } else {
+          uni.showToast({ title: (res.data as Data<T>).msg || '请求失败', icon: 'none' })
+          reject(res)
+        }
+      },
+      // 响应失败
+      fail(err) {
+        uni.showToast({ title: '网络错误,换个网络试试', icon: 'none' })
+        reject(err)
+      },
+    })
+  })
+}
