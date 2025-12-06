@@ -7,6 +7,7 @@ import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
 import CategoryPannel from '@/pages/index/components/CategoryPannel.vue'
 import { getHomeCategoryAPI } from '@/services/home'
 import HotPannel from '@/pages/index/components/HotPannel.vue'
+import XtxGuess from '@/components/XtxGuess.vue'
 
 const bannerList = ref<BannerItem[]>([])
 //获取轮播图数据
@@ -40,18 +41,27 @@ const getHomeHotData = async () => {
 <template>
   <!-- 自定义导航栏 -->
   <CustomNavbar />
-  <!-- 自定义轮播图 -->
-  <XtxSwiper :list="bannerList" />
-  <!-- 分类面板 -->
-  <CategoryPannel :list="categoryList"></CategoryPannel>
-  <!-- 热门推荐 -->
-  <HotPannel :list="hotList"></HotPannel>
-  <view class="index">index</view>
+  <scroll-view scroll-y class="scroll-view">
+    <!-- 自定义轮播图 -->
+    <XtxSwiper :list="bannerList" />
+    <!-- 分类面板 -->
+    <CategoryPannel :list="categoryList"></CategoryPannel>
+    <!-- 热门推荐 -->
+    <HotPannel :list="hotList"></HotPannel>
+    <!-- 猜你喜欢 -->
+    <XtxGuess></XtxGuess>
+  </scroll-view>
 </template>
 
 <style lang="scss">
 //
 page {
   background-color: #f7f7f7;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.scroll-view {
+  flex: 1;
 }
 </style>
