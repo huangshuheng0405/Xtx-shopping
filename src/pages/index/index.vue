@@ -8,6 +8,7 @@ import CategoryPannel from '@/pages/index/components/CategoryPannel.vue'
 import { getHomeCategoryAPI } from '@/services/home'
 import HotPannel from '@/pages/index/components/HotPannel.vue'
 import XtxGuess from '@/components/XtxGuess.vue'
+import type { XtxGuessInstance } from '@/types/component'
 
 const bannerList = ref<BannerItem[]>([])
 //获取轮播图数据
@@ -36,12 +37,19 @@ const getHomeHotData = async () => {
   // console.log(res)
   hotList.value = res.result
 }
+// 滚动触底
+const guessRef = ref<XtxGuessInstance>()
+const onScrolltolower = () => {
+  // console.log('触底')
+  guessRef.value?.getMore()
+}
 </script>
 
 <template>
   <!-- 自定义导航栏 -->
   <CustomNavbar />
-  <scroll-view scroll-y class="scroll-view">
+  <!-- 滚动容器 -->
+  <scroll-view @scrolltolower="onScrolltolower" scroll-y class="scroll-view">
     <!-- 自定义轮播图 -->
     <XtxSwiper :list="bannerList" />
     <!-- 分类面板 -->
@@ -49,7 +57,7 @@ const getHomeHotData = async () => {
     <!-- 热门推荐 -->
     <HotPannel :list="hotList"></HotPannel>
     <!-- 猜你喜欢 -->
-    <XtxGuess></XtxGuess>
+    <XtxGuess ref="guessRef"></XtxGuess>
   </scroll-view>
 </template>
 
