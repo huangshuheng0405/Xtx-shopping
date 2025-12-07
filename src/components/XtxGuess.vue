@@ -7,7 +7,7 @@ import type { PageParams } from '@/types/global'
 // 分页参数
 const pageParams: Required<PageParams> = {
   page: 1,
-  pageSize: 10,
+  pageSize: 10
 }
 const guessList = ref<GuessItem[]>([])
 const finish = ref(false)
@@ -42,7 +42,7 @@ onMounted(() => {
 // 暴露方法
 defineExpose({
   resetData,
-  getMore: getHomeGoodsGuessLikeData,
+  getMore: getHomeGoodsGuessLikeData
 })
 </script>
 

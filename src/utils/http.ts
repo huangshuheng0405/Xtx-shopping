@@ -15,7 +15,7 @@ const httpInterceptor = {
     // 添加小程序请求头标识
     options.header = {
       ...options.header, // 要保留原来的东西 不然等号直接覆盖原来的东西
-      'source-client': 'miniapp',
+      'source-client': 'miniapp'
     }
     // 添加token请求头标识
     const memberStore = useMemberStore()
@@ -24,7 +24,7 @@ const httpInterceptor = {
       options.header.Authorization = token
     }
     // console.log(options)
-  },
+  }
 }
 uni.addInterceptor('request', httpInterceptor)
 uni.addInterceptor('uploadFile', httpInterceptor)
@@ -58,7 +58,7 @@ export const http = <T>(options: UniApp.RequestOptions) => {
       fail(err) {
         uni.showToast({ title: '网络错误,换个网络试试', icon: 'none' })
         reject(err)
-      },
+      }
     })
   })
 }

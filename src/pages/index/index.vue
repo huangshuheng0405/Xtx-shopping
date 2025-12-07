@@ -61,7 +61,7 @@ const onRefresherrefresh = async () => {
     getHomeBannerData(),
     getHomeCategoryData(),
     getHomeHotData(),
-    guessRef.value?.getMore(),
+    guessRef.value?.getMore()
   ])
   isTriggered.value = false
 }

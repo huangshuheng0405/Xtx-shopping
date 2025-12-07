@@ -12,8 +12,8 @@ export const getHomeBannerAPI = (distributionSite = 1) => {
     method: 'GET',
     url: '/home/banner',
     data: {
-      distributionSite,
-    },
+      distributionSite
+    }
   })
 }
 
@@ -21,7 +21,7 @@ export const getHomeBannerAPI = (distributionSite = 1) => {
 export const getHomeCategoryAPI = () => {
   return http<CategoryItem[]>({
     method: 'GET',
-    url: '/home/category/mutli',
+    url: '/home/category/mutli'
   })
 }
 
@@ -29,7 +29,7 @@ export const getHomeCategoryAPI = () => {
 export const getHomeHotAPI = () => {
   return http<HotItem[]>({
     method: 'GET',
-    url: '/home/hot/mutli',
+    url: '/home/hot/mutli'
   })
 }
 
@@ -39,6 +39,6 @@ export const getHomeGoodsGuessLikeAPI = (data?: PageParams) => {
   return http<PageResult<GuessItem>>({
     method: 'GET',
     url: '/home/goods/guessLike',
-    data,
+    data
   })
 }
