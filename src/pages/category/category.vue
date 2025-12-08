@@ -67,6 +67,7 @@ const subCategoryList = computed(() => {
             <navigator class="more" hover-class="none">全部</navigator>
           </view>
           <view class="section">
+            <!-- 跳转传参 -->
             <navigator
               v-for="goods in item.goods"
               :key="goods.id"
