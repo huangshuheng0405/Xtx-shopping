@@ -5,6 +5,11 @@ import type { PageParams, PageResult } from '@/types/global'
 // 获取首页广告区域
 // distributionSite
 // 广告区域展示位置
+/**
+ *
+ * @param distributionSite // 1 为首页（默认值）2 为商品分类页
+ * @returns
+ */
 // 1 为首页（默认值）
 // 2 为商品分类页
 export const getHomeBannerAPI = (distributionSite = 1) => {
