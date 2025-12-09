@@ -10,6 +10,7 @@ import HotPannel from '@/pages/index/components/HotPannel.vue'
 import XtxGuess from '@/components/XtxGuess.vue'
 import type { XtxGuessInstance } from '@/types/component'
 import PageSkeleton from './components/PageSkeleton.vue'
+import { useGuess } from '@/composables'
 
 const bannerList = ref<BannerItem[]>([])
 //获取轮播图数据
@@ -41,11 +42,12 @@ const getHomeHotData = async () => {
   hotList.value = res.result
 }
 // 滚动触底
-const guessRef = ref<XtxGuessInstance>()
-const onScrolltolower = () => {
-  // console.log('触底')
-  guessRef.value?.getMore()
-}
+// const guessRef = ref<XtxGuessInstance>()
+// const onScrolltolower = () => {
+//   // console.log('触底')
+//   guessRef.value?.getMore()
+// }
+const { guessRef, loadMore } = useGuess()
 // 自定义下拉刷新被触发
 const isTriggered = ref(false)
 const onRefresherrefresh = async () => {
@@ -72,7 +74,7 @@ const onRefresherrefresh = async () => {
   <CustomNavbar />
   <!-- 滚动容器 -->
   <scroll-view
-    @scrolltolower="onScrolltolower"
+    @scrolltolower="loadMore"
     scroll-y
     class="scroll-view"
     refresher-enabled

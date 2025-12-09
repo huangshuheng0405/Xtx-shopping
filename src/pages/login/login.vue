@@ -16,15 +16,15 @@ const onGetPhoneNumber: UniHelper.ButtonOnGetphonenumber = async (event) => {
   const iv = event.detail!.iv!
   const res = await loginAPI({ code, encryptedData, iv })
   // console.log(res)
-  loginSuccess(res.result)
+  saveProfile(res.result)
 }
 // 模拟快捷登录 开发练习
 const onTapSimulateLogin = async () => {
   const res = await loginWxMinSimpleAPI('17850967571')
   // console.log(res)
-  loginSuccess(res.result)
+  saveProfile(res.result)
 }
-const loginSuccess = (profile: LoginResult) => {
+const saveProfile = (profile: LoginResult) => {
   // 保存会员信息
   const memberStore = useMemberStore()
   memberStore.setProfile(profile)
