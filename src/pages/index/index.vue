@@ -53,9 +53,6 @@ const isTriggered = ref(false)
 const onRefresherrefresh = async () => {
   // console.log('自定义下拉刷新被触发')
   isTriggered.value = true
-  // await getHomeBannerData()
-  // await getHomeCategoryData()
-  // await getHomeHotData()
   // 三个请求同时发送 减少等待时间
   // 重置猜你喜欢数据
   guessRef.value?.resetData()

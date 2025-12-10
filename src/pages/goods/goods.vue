@@ -3,9 +3,15 @@
 import { getGoodsByIdAPI } from '@/services/goods'
 import type { GoodsResult } from '@/types/goods'
 import { onLoad } from '@dcloudio/uni-app'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import AddressPanel from './components/AddressPanel.vue'
 import ServicePanel from './components/ServicePanel.vue'
+import type {
+  SkuPopupEvent,
+  SkuPopupInstanceType,
+  SkuPopupLocaldata
+} from '@/components/vk-data-goods-sku-popup/vk-data-goods-sku-popup'
+import { addCartAPI } from '@/services/cart'
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -14,19 +20,41 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
 const query = defineProps<{
   id: string
 }>()
+
 // console.log(query)
 // 获取商品详情信息
 const goods = ref<GoodsResult>()
 const getGoodsByIdData = async () => {
   const res = await getGoodsByIdAPI(query.id)
   goods.value = res.result
+  // SKU组件所需的格式
+  localdata.value = {
+    _id: res.result.id,
+    name: res.result.name,
+    goods_thumb: res.result.mainPictures[0],
+    spec_list: res.result.specs.map((spec) => ({
+      name: spec.name,
+      list: spec.values
+    })),
+    sku_list: res.result.skus.map((sku) => ({
+      _id: sku.id,
+      goods_id: res.result.id,
+      goods_name: res.result.name,
+      image: sku.picture,
+      price: sku.price * 100, // 要乘以100
+      sku_name_arr: sku.specs.map((spec) => spec.valueName),
+      stock: sku.inventory
+    }))
+  }
 }
+
 // 轮播图变化时，更新当前轮播图的下标
 const currentIndex = ref(0)
 const handleSwiperChange: UniHelper.SwiperOnChange = (ev) => {
   // console.log(ev.detail.current)
   currentIndex.value = ev.detail?.current
 }
+
 // 点击图片时
 const handleImageTap = (url: string) => {
   // 大图预览
@@ -52,9 +80,65 @@ const openPopup = (name: 'address' | 'service') => {
 onLoad(() => {
   getGoodsByIdData()
 })
+
+// 是否显示SKU组件
+const isShowSKU = ref(false)
+
+// 商品信息
+const localdata = ref({} as SkuPopupLocaldata)
+
+// 按钮模式
+enum SkuMode {
+  Both = 1,
+  Cart = 2,
+  Buy = 3
+}
+const mode = ref<SkuMode>(SkuMode.Both)
+
+// 打开sku弹窗修改按钮格式
+const openSkuPopup = (val: SkuMode) => {
+  isShowSKU.value = true
+  // 修改按钮模式
+  mode.value = val
+}
+
+// sku组件实例
+const skuPopupRef = ref<SkuPopupInstanceType>()
+
+// 计算被选中的值
+const selectedValue = computed(() => {
+  return skuPopupRef.value?.selectArr?.join(' ').trim() || '请选择商品规格'
+})
+
+// 加入购物车事件
+const onAddCart = async (ev: SkuPopupEvent) => {
+  // console.log(ev)
+  await addCartAPI({ skuId: ev._id, count: ev.buy_num })
+  uni.showToast({
+    title: '加入购物车成功',
+    icon: 'success'
+  })
+  // 隐藏SKU组件
+  isShowSKU.value = false
+}
 </script>
 
 <template>
+  <!-- SKU弹窗组件 -->
+  <vk-data-goods-sku-popup
+    v-model="isShowSKU"
+    :localdata="localdata"
+    :mode="mode"
+    add-cart-background-color="#ffa868"
+    buy-now-background-color="#27ba9b"
+    ref="skuPopupRef"
+    :actived-style="{
+      color: '#27ba9b',
+      borderColor: '#27ba9b',
+      backgroundColor: '#e9f8f5'
+    }"
+    @add-cart="onAddCart"
+  />
   <scroll-view scroll-y class="viewport">
     <!-- 基本信息 -->
     <view class="goods">
@@ -84,9 +168,9 @@ onLoad(() => {
 
       <!-- 操作面板 -->
       <view class="action">
-        <view class="item arrow">
+        <view @tap="openSkuPopup(SkuMode.Both)" class="item arrow">
           <text class="label">选择</text>
-          <text class="text ellipsis"> 请选择商品规格 </text>
+          <text class="text ellipsis">{{ selectedValue }}</text>
         </view>
         <view @tap="openPopup('address')" class="item arrow">
           <text class="label">送至</text>
@@ -158,8 +242,8 @@ onLoad(() => {
       </navigator>
     </view>
     <view class="buttons">
-      <view class="addcart"> 加入购物车 </view>
-      <view class="buynow"> 立即购买 </view>
+      <view @tap="openSkuPopup(SkuMode.Cart)" class="addcart"> 加入购物车 </view>
+      <view @tap="openSkuPopup(SkuMode.Buy)" class="buynow"> 立即购买 </view>
     </view>
   </view>
 
