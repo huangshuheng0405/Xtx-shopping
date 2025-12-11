@@ -63,11 +63,13 @@ const handleImageTap = (url: string) => {
     urls: goods.value!.mainPictures
   })
 }
+
 // uni-ui 弹出层
 const popup = ref<{
   open: (type?: UniHelper.UniPopupType) => void
   close: () => void
 }>()
+
 // 弹出层条件渲染
 const popupName = ref<'address' | 'service'>()
 const openPopup = (name: 'address' | 'service') => {
@@ -120,6 +122,13 @@ const onAddCart = async (ev: SkuPopupEvent) => {
   })
   // 隐藏SKU组件
   isShowSKU.value = false
+}
+
+// 跳转到购物车页面
+const goToCart = () => {
+  uni.navigateTo({
+    url: '/pages/cart/cart2'
+  })
 }
 </script>
 
@@ -237,9 +246,7 @@ const onAddCart = async (ev: SkuPopupEvent) => {
       <button class="icons-button" open-type="contact">
         <text class="icon-handset"></text>客服
       </button>
-      <navigator class="icons-button" url="/pages/cart/cart" open-type="switchTab">
-        <text class="icon-cart"></text>购物车
-      </navigator>
+      <view @tap="goToCart" class="icons-button"> <text class="icon-cart"></text>购物车 </view>
     </view>
     <view class="buttons">
       <view @tap="openSkuPopup(SkuMode.Cart)" class="addcart"> 加入购物车 </view>

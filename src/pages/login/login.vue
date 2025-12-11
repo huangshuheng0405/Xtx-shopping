@@ -30,7 +30,9 @@ const saveProfile = (profile: LoginResult) => {
   memberStore.setProfile(profile)
   uni.showToast({ icon: 'success', title: '登录成功' })
   setTimeout(() => {
-    uni.switchTab({ url: '/pages/my/my' })
+    // uni.switchTab({ url: '/pages/my/my' })
+    // 返回上一页 更好的用户体验
+    uni.navigateBack()
   }, 500)
 }
 
