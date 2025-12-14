@@ -11,6 +11,9 @@ import type { CartItem } from '@/types/cart'
 import { onShow } from '@dcloudio/uni-app'
 import { computed } from 'vue'
 import type { InputNumberBoxEvent } from '@/components/vk-data-input-number-box/vk-data-input-number-box'
+import { useGuess } from '@/composables'
+// 获取屏幕边界到安全区域距离
+const { safeAreaInsets } = uni.getSystemInfoSync()
 
 // 获取会员store
 const memberStore = useMemberStore()
@@ -90,6 +93,7 @@ const selectedCartListAmount = computed(() => {
   return selectedCartList.value.reduce((prev, cur) => prev + cur.count * cur.price, 0).toFixed(2)
 })
 
+// 跳转结算
 const gotoPayment = () => {
   if (selectedCartList.value.length === 0) {
     uni.showToast({
@@ -100,13 +104,16 @@ const gotoPayment = () => {
   }
   // 跳转结算页面
   uni.navigateTo({
-    url: '/pages/payment/payment'
+    url: '/pagesOrder/create/create'
   })
 }
+
+// 猜你喜欢
+const { guessRef, loadMore } = useGuess()
 </script>
 
 <template>
-  <scroll-view scroll-y class="scroll-view">
+  <scroll-view @scrolltolower="loadMore" scroll-y class="scroll-view">
     <!-- 已登录: 显示购物车 -->
     <template v-if="memberStore.profile">
       <!-- 购物车列表 -->
@@ -169,7 +176,7 @@ const gotoPayment = () => {
         </navigator>
       </view>
       <!-- 吸底工具栏 -->
-      <view class="toolbar">
+      <view class="toolbar" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }">
         <text @tap="changeSelectedAll" class="all" :class="{ checked: isSelectAll }">全选</text>
         <text class="text">合计:</text>
         <text class="amount">{{ selectedCartListAmount }}</text>

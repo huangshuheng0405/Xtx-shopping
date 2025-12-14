@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { getGoodsByIdAPI } from '@/services/goods'
 import type { GoodsResult } from '@/types/goods'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onShow } from '@dcloudio/uni-app'
 import { computed, ref } from 'vue'
 import AddressPanel from './components/AddressPanel.vue'
 import ServicePanel from './components/ServicePanel.vue'
@@ -12,9 +12,13 @@ import type {
   SkuPopupLocaldata
 } from '@/components/vk-data-goods-sku-popup/vk-data-goods-sku-popup'
 import { addCartAPI } from '@/services/cart'
+import { useAddressStore } from '@/stores/modules/address'
 
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
+
+// 地址store
+const addressStore = useAddressStore()
 
 // 接收参数
 const query = defineProps<{
@@ -83,6 +87,15 @@ onLoad(() => {
   getGoodsByIdData()
 })
 
+// AddressPanel 组件引用
+const addressPanelRef = ref<InstanceType<typeof AddressPanel>>()
+
+// 页面显示时刷新地址列表
+onShow(() => {
+  // 如果地址面板存在，刷新地址列表
+  addressPanelRef.value?.getAddressList()
+})
+
 // 是否显示SKU组件
 const isShowSKU = ref(false)
 
@@ -130,6 +143,14 @@ const goToCart = () => {
     url: '/pages/cart/cart2'
   })
 }
+
+// 立即购买事件
+const onBuyNow = async (ev: SkuPopupEvent) => {
+  // console.log(ev)
+  uni.navigateTo({
+    url: `/pagesOrder/create/create?skuId=${ev._id}&count=${ev.buy_num}`
+  })
+}
 </script>
 
 <template>
@@ -147,6 +168,7 @@ const goToCart = () => {
       backgroundColor: '#e9f8f5'
     }"
     @add-cart="onAddCart"
+    @buy-now="onBuyNow"
   />
   <scroll-view scroll-y class="viewport">
     <!-- 基本信息 -->
@@ -183,7 +205,9 @@ const goToCart = () => {
         </view>
         <view @tap="openPopup('address')" class="item arrow">
           <text class="label">送至</text>
-          <text class="text ellipsis"> 请选择收获地址 </text>
+          <text class="text ellipsis">
+            {{ addressStore.selectedAddress?.fullLocation || '请选择收货地址' }}
+          </text>
         </view>
         <view @tap="openPopup('service')" class="item arrow">
           <text class="label">服务</text>
@@ -256,7 +280,7 @@ const goToCart = () => {
 
   <!-- uni-ui 弹出层 -->
   <uni-popup ref="popup" type="bottom" background-color="#fff">
-    <AddressPanel v-if="popupName === 'address'" @close="popup?.close" />
+    <AddressPanel ref="addressPanelRef" v-if="popupName === 'address'" @close="popup?.close" />
     <ServicePanel v-if="popupName === 'service'" @close="popup?.close" />
   </uni-popup>
 </template>
